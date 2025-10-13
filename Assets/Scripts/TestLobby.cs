@@ -147,9 +147,10 @@ public class TestLobby : MonoBehaviour
     {
         try
         {
+            Player player = await GetPlayer();
             JoinLobbyByCodeOptions joinLobbyByCodeOptions = new JoinLobbyByCodeOptions()
             {
-                Player = GetPlayer().Result
+                Player = player
             };
 
             Lobby lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode, joinLobbyByCodeOptions);
