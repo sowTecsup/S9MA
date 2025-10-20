@@ -32,7 +32,7 @@ public class TestLobby : MonoBehaviour
             heartBeatTimer -= Time.deltaTime;
             if (heartBeatTimer < 0)
             {
-                float heartbeatTimerMax = 15;
+                float heartbeatTimerMax = 10;
                 heartBeatTimer = heartbeatTimerMax;
 
                 await LobbyService.Instance.SendHeartbeatPingAsync(HostLobby.Id);
@@ -55,48 +55,18 @@ public class TestLobby : MonoBehaviour
             }
         }
     }
-    [Button]
-    public async void CreateLobby2()
-    {
-        try
-        {
-            Player player = await GetPlayer();
-            CreateLobbyOptions options = new CreateLobbyOptions()
-            {
-                IsPrivate = false,
-                Player = player
-
-                /*Data = new Dictionary<string, DataObject>
-                {
-                    {"GameMode", new DataObject(DataObject.VisibilityOptions.Public,gameMode) },
-                    {"Map", new DataObject(DataObject.VisibilityOptions.Public,map) },
-                }*/
-
-            };
-
-            Lobby lobby = await LobbyService.Instance.CreateLobbyAsync("AAA", 4, options);
-
-            HostLobby = lobby;
-            JoinedLobby = HostLobby;
-            Debug.Log("Partida creada" + lobby.Name + "Max player : " + lobby.MaxPlayers + "Joincode: " + lobby.LobbyCode);
-
-        }
-        catch (LobbyServiceException ex)
-        {
-            Debug.Log(ex);
-        }
-    }
+    
     [Button]
     public async void CreateLobby(string lobbyName, int maxPlayers =4, bool isPrivate = false, string gameMode = "CTF", string map = "Peru")
     {
         try
         {
-            Player player = await GetPlayer();
+            //Player player = await GetPlayer();
             CreateLobbyOptions options = new CreateLobbyOptions()
             {
                 IsPrivate = isPrivate,
 
-                Player = player,
+                Player = await GetPlayer(),
 
                 Data = new Dictionary<string, DataObject>
                 {
@@ -147,16 +117,16 @@ public class TestLobby : MonoBehaviour
     {
         try
         {
-            Player player = await GetPlayer();
+            //Player player = await GetPlayer();
             JoinLobbyByCodeOptions joinLobbyByCodeOptions = new JoinLobbyByCodeOptions()
             {
-                Player = player
+                Player = await GetPlayer()
             };
 
             Lobby lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode, joinLobbyByCodeOptions);
 
             JoinedLobby = lobby;
-            Debug.Log("Te uniste al lobby!!!   " + lobbyCode);
+            Debug.Log("Te uniste al lobby!!!   " + lobby.Name);
         }
         catch (LobbyServiceException ex)
         {
@@ -167,7 +137,7 @@ public class TestLobby : MonoBehaviour
     [Button]
     public void PrintPlayer()
     {
-        PrintPlayers(HostLobby);
+        PrintPlayers(JoinedLobby);
     }
 
     public void PrintPlayers(Lobby lobby)
@@ -181,7 +151,7 @@ public class TestLobby : MonoBehaviour
     [Button]
     public async Task<Player> GetPlayer()
     {
-        string nickName = await GetPlayerName();
+        string nickName = await AuthenticationService.Instance.GetPlayerNameAsync();
 
         return new Player
         {
@@ -191,7 +161,7 @@ public class TestLobby : MonoBehaviour
         }
         };
     }
-    [Button]
+   /* [Button]
     public async Task<String> GetPlayerName()
     {
         try
@@ -205,6 +175,6 @@ public class TestLobby : MonoBehaviour
             Debug.Log("Testo" + ex);
         }
         return "";
-    }
+    }*/
   
 }
