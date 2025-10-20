@@ -16,6 +16,8 @@ public class TestLobby : MonoBehaviour
 
     private float heartBeatTimer;
     private float lobbyUpdateTimer;
+
+    public Action<List<Lobby>> OnLobbyRefresh; 
     private async void Start()
     {
         //await UnityServices.InitializeAsync();
@@ -56,6 +58,7 @@ public class TestLobby : MonoBehaviour
         }
     }
     
+    //-> UI LLAMAR DESDE LA UI
     [Button]
     public async void CreateLobby(string lobbyName, int maxPlayers =4, bool isPrivate = false, string gameMode = "CTF", string map = "Peru")
     {
@@ -90,6 +93,8 @@ public class TestLobby : MonoBehaviour
             Debug.Log(ex);
         } 
     }
+
+    //-> UI REFRESH BUTTON
     [Button]
     public async void ListLobbies()
     {
@@ -104,6 +109,7 @@ public class TestLobby : MonoBehaviour
                 Debug.Log("Lobby Name: " + lobby.Name + "Max player : " + lobby.MaxPlayers + "Joincode: " + lobby.LobbyCode);
 
             }
+            OnLobbyRefresh?.Invoke(queryResponse.Results);
         }
         catch (LobbyServiceException ex)
         {
@@ -134,6 +140,30 @@ public class TestLobby : MonoBehaviour
         }
     }
 
+
+    //->llamar desde la UI
+    [Button]
+    public async void JoinLobbyByID(string lobbyCode)
+    {
+        try
+        {
+            //Player player = await GetPlayer();
+            JoinLobbyByIdOptions joinLobbyByCodeOptions = new JoinLobbyByIdOptions()
+            {
+                Player = await GetPlayer()
+            };
+
+            Lobby lobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyCode, joinLobbyByCodeOptions);
+
+            JoinedLobby = lobby;
+            Debug.Log("Te uniste al lobby!!!   " + lobby.Name);
+        }
+        catch (LobbyServiceException ex)
+        {
+            Debug.LogException(ex);
+        }
+    }
+
     [Button]
     public void PrintPlayer()
     {
@@ -147,6 +177,9 @@ public class TestLobby : MonoBehaviour
         {
             Debug.Log(player.Id + " " + player.Data["PlayerName"].Value);
         }
+
+      //  lobby.Id
+         // lobby.LobbyCode   
     }
     [Button]
     public async Task<Player> GetPlayer()
