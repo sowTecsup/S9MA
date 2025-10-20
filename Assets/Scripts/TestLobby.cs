@@ -17,6 +17,7 @@ public class TestLobby : MonoBehaviour
     private float heartBeatTimer;
     private float lobbyUpdateTimer;
 
+    //->Retorna todas los lobbys
     public Action<List<Lobby>> OnLobbyRefresh; 
     private async void Start()
     {
@@ -107,6 +108,7 @@ public class TestLobby : MonoBehaviour
             foreach (Lobby lobby in queryResponse.Results)
             {
                 Debug.Log("Lobby Name: " + lobby.Name + "Max player : " + lobby.MaxPlayers + "Joincode: " + lobby.LobbyCode);
+              //  lobby.Players[0].Data["PlayerName"]
 
             }
             OnLobbyRefresh?.Invoke(queryResponse.Results);
